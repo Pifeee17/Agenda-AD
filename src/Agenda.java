@@ -136,7 +136,7 @@ public class Agenda {
 	}
 
 
-    /*public int dameOpcion() {
+    public int dameOpcion() {
 		int opcion;
 
 		menu();
@@ -145,4 +145,4 @@ public class Agenda {
 		return opcion;
 	}
 }
-*/
+
