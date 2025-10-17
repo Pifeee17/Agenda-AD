@@ -9,13 +9,15 @@ public class Agenda {
     private DataOutputStream flujoSalida;
     private DataInputStream flujoEntrada;
 
+    boolean encontrado = false;
+
     public Agenda(File fichero) {
         this.fichero = fichero;
         this.contactos = new ArrayList<>();
     }
 
     public void cabecera() {
-        System.out.println("\tNombre\tTelefono\tEmail");
+        System.out.println("\tNombre\t\tTelefono\t\tEmail");
         System.out.println("\t=============================");
     }
 
@@ -87,21 +89,43 @@ public class Agenda {
         System.out.println("Contacto modificado correctamente.");
     }
 
-    public void restaurar() {
-        try (DataInputStream dis = new DataInputStream(new FileInputStream(fichero))) {
-            contactos.clear();
-            while (true) {
-                String nombre = dis.readUTF();
-                String telefono = dis.readUTF();
-                String email = dis.readUTF();
+   public void restaurar() {
+    System.out.print("Introduce el nombre del contacto a buscar: ");
+    String buscarNombre = Leer.datoString();
+
+    boolean nombreEncontrado = false;
+
+    if (fichero == null) {
+        System.err.println("No se ha establecido fichero para la agenda.");
+        return;
+    }
+
+    if (!fichero.exists()) {
+        System.err.println("El fichero " + fichero.getAbsolutePath() + " no existe.");
+        return;
+    }
+
+    try (DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(fichero)))) {
+        
+        while (true) {
+            String nombre = dis.readUTF();
+            String telefono = dis.readUTF();
+            String email = dis.readUTF();
+
+            if (nombre.equalsIgnoreCase(buscarNombre)) {
                 contactos.add(new Contacto(nombre, telefono, email));
+                nombreEncontrado = true;
+                break; 
             }
-        } catch (EOFException e) {
-            System.out.println("Contactos restaurados desde el archivo.");
-        } catch (IOException e) {
-            System.err.println("Error al restaurar el fichero.");
+        }
+    } catch (IOException e) {
+        if (!nombreEncontrado) {
+            System.out.println("No se encontró el contacto: " + buscarNombre);
+        } else {
+            System.out.println("Contacto restaurado correctamente.");
         }
     }
+}
 
     public Contacto buscarPorNombre() {
         System.out.print("Introduce el nombre del contacto a buscar: ");
@@ -117,6 +141,26 @@ public class Agenda {
         System.out.println("No se ha encontrado ningún contacto con ese nombre.");
         return null;
     }
+
+    public void guardar() {
+    if (fichero == null) {
+        System.err.println("No se ha establecido fichero para la agenda.");
+        return;
+    }
+
+    try (DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(fichero)))) {
+        for (Contacto c : contactos) {
+            dos.writeUTF(c.getNombre());
+            dos.writeUTF(c.getTelefono());
+            dos.writeUTF(c.getEmail());
+            
+        }
+        System.out.println("Agenda guardada correctamente en: " + fichero.getAbsolutePath());
+    } catch (IOException e) {
+        System.err.println("Error al guardar la agenda: " + e.getMessage());
+    }
+}
+
 
 
     private void menu() {

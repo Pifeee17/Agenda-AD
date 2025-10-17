@@ -16,6 +16,7 @@ public class main {
             switch (opcion) {
                 case 1:
                     agenda.llenar();
+                    agenda.guardar();
                     break;
 
                 case 2:
