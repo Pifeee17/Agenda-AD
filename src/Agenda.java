@@ -221,6 +221,44 @@ public void Borrar(){
 		System.out.print("Pulsa opcion: ");
 	}
 
+    private void primerMenu() {
+        System.out.println("\tM A S  O P C I O N E S");
+        System.out.println(" ================================");
+        System.out.println("1.- Mostrar informacion del archivo.");
+        System.out.println("2.- Hacer copia de seguridad.");
+        System.out.println("3.- Restaurar copia de seguridad.");
+        System.out.println("4.- Volver al menu principal.");
+    }
+
+    //Esto se usa para poder cambiar de menu cuanto pulses el boton 9 
+    //y que salga con las opciones del 9
+    public void mostrarPrimerMenu() throws IOException {
+    int opcion;
+
+    do {
+        primerMenu();
+        System.out.print("Elige una opción: ");
+        opcion = Leer.datoInt();
+
+        switch (opcion) {
+            case 1:
+                System.out.println("Opcion de mostrar informacion no implementada.");
+                break;
+            case 2:
+                System.out.println("Opcion de copia de seguridad no implementada.");
+                break;
+            case 3:
+                System.out.println("Opcion de restaurar copia de seguridad no implementada.");
+                break;
+            case 4:
+                System.out.println("Volviendo al menú principal...");
+                break;
+            default:
+                System.out.println("Opción no válida. Intenta de nuevo.");
+        }
+    } while (opcion != 4);
+}
+
     public int dameOpcion() {
 		int opcion;
 

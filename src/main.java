@@ -53,13 +53,14 @@ public class main {
                     break;
 
                 case 9:
-                    System.out.println("Más opciones próximamente...");
+                   agenda.mostrarPrimerMenu();
                     break;
 
                 case 10:
                     System.out.println("Saliendo del programa...");
                     break;
 
+                
                 default:
                     System.out.println("Opción errónea. Intente de nuevo.");
                     break;
