@@ -6,8 +6,6 @@ public class Agenda {
 
     private ArrayList<Contacto> contactos;
     private File fichero;
-    private DataOutputStream flujoSalida;
-    private DataInputStream flujoEntrada;
 
     boolean encontrado = false;
 
@@ -127,7 +125,7 @@ public class Agenda {
     }
 }
 
-    public Contacto buscarPorNombre() {
+    public Contacto consultarContacto() {
         System.out.print("Introduce el nombre del contacto a buscar: ");
         String nombreBuscado = Leer.datoString();
 
@@ -161,11 +159,55 @@ public class Agenda {
     }
 }
 
+public void Borrar(){
 
+     String rutaCarpeta = "F:/Dam2/AD/Java/Repaso_DAM1/Agenda";
+        String nombreArchivo = "ContactosBorrados.dat";
 
+        File carpeta = new File(rutaCarpeta);
+        File archivo = new File(carpeta, nombreArchivo);
+
+        if (!carpeta.exists()) {
+        carpeta.mkdirs();
+    }
+
+    boolean encontrado = false;
+
+    try (BufferedWriter bw = new BufferedWriter(new FileWriter(archivo, true))) { 
+        // true para no sobrescribir cada vez
+
+        System.out.println("Introduce el nombre del contacto a borrar: ");
+        String nombreBorrar = Leer.datoString();
+
+        Iterator<Contacto> it = contactos.iterator();
+        while (it.hasNext()) {
+            Contacto c = it.next();
+            if (c.getNombre().equalsIgnoreCase(nombreBorrar)) {
+                System.out.println("Contacto encontrado:");
+                c.mostrarContacto();
+                it.remove();
+                encontrado = true;
+
+                // Guarda el contacto borrado en el archivo
+                bw.write("Nombre: "+c.getNombre() + "  Telefono: " + c.getTelefono() + "  Email: " + c.getEmail());
+                bw.newLine();
+
+                System.out.println("Contacto borrado correctamente.");
+                break;
+            }
+        }
+
+        if (!encontrado) {
+            System.out.println("No se encontró ningún contacto con ese nombre.");
+        }
+
+    } catch (IOException e) {
+        System.out.println("Error al escribir el archivo: " + e.getMessage());
+    }
+}
     private void menu() {
-		System.out.println("\n  M E N U ");
-		System.out.println("  ====================");
+		System.out.println("\tA G E N D A ");
+		System.out.println("  =======================");
 		System.out.println("1.- CREAR Agenda");
 		System.out.println("2.- ANHADIR Contacto");
 		System.out.println("3.- CONSULTAR Contacto");
@@ -178,7 +220,6 @@ public class Agenda {
 		System.out.println("10.- FINAL");
 		System.out.print("Pulsa opcion: ");
 	}
-
 
     public int dameOpcion() {
 		int opcion;

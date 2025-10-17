@@ -21,22 +21,26 @@ public class main {
 
                 case 2:
                     agenda.anhadir();
+                    agenda.guardar();
                     break;
 
                 case 3:
-                    agenda.buscarPorNombre();
+                    agenda.consultarContacto();
                     break;
 
                 case 4:
                     agenda.modificar();
+                    agenda.guardar();
                     break;
 
                 case 5:
-                    System.out.println("Función BORRAR contacto aún no implementada.");
+                    agenda.Borrar();
+                    agenda.guardar();
                     break;
 
                 case 6:
-                    agenda.restaurar(); //falta hacer que solo restaure los contactos borrados
+                    agenda.restaurar();
+                    agenda.guardar();
                     break;
 
                 case 7:
@@ -45,6 +49,7 @@ public class main {
 
                 case 8:
                     agenda.vaciar();
+                    agenda.guardar();
                     break;
 
                 case 9:
