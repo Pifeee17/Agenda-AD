@@ -52,7 +52,7 @@ public class main {
                     break;
 
                 case 9:
-                   agenda.mostrarPrimerMenu();
+                   agenda.mostrarUltimoMenu();
                     break;
 
                 case 10:

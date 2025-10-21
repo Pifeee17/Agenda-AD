@@ -1,5 +1,7 @@
 import java.io.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 
 public class Agenda {
@@ -204,6 +206,20 @@ public void Borrar(){
     }
     
 }
+    public static void informacionDelArchivo(File fichero){
+        System.out.println("\tI N F O  F I C H E R O ");
+        System.out.println(" ================================");
+
+        if(fichero.exists()){
+            System.out.println("Ubicacion: " + fichero.getAbsolutePath());
+            System.out.println("Tamaño: " + fichero.length() + " bytes");
+            System.out.println("Permisos: Lectura: " + fichero.canRead() + "; Escritura: " + fichero.canWrite() + "; Ejecución: " + fichero.canExecute());
+            Long ultimaModificacion = fichero.lastModified();
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+            System.out.println("Ultima modificacion: " + sdf.format(new Date(ultimaModificacion)));
+
+        }
+    }
 
     private void primerMenu() {
         System.out.println("\tC R E A R  A G E N D A ");
@@ -277,7 +293,7 @@ public void Borrar(){
 
         switch (opcion) {
             case 1:
-                System.out.println("Opcion de mostrar informacion no implementada.");
+               informacionDelArchivo(fichero);
                 break;
             case 2:
                 System.out.println("Opcion de copia de seguridad no implementada.");
