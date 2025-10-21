@@ -174,7 +174,6 @@ public void Borrar(){
     boolean encontrado = false;
 
     try (BufferedWriter bw = new BufferedWriter(new FileWriter(archivo, true))) { 
-        // true para no sobrescribir cada vez
 
         System.out.println("Introduce el nombre del contacto a borrar: ");
         String nombreBorrar = Leer.datoString();
@@ -188,7 +187,6 @@ public void Borrar(){
                 it.remove();
                 encontrado = true;
 
-                // Guarda el contacto borrado en el archivo
                 bw.write("Nombre: "+c.getNombre() + "  Telefono: " + c.getTelefono() + "  Email: " + c.getEmail());
                 bw.newLine();
 
@@ -204,8 +202,47 @@ public void Borrar(){
     } catch (IOException e) {
         System.out.println("Error al escribir el archivo: " + e.getMessage());
     }
+    
 }
-    private void menu() {
+
+    private void primerMenu() {
+        System.out.println("\tC R E A R  A G E N D A ");
+        System.out.println(" ============================= ");
+        System.out.println("1.- CREAR Agenda LLENA.");
+        System.out.println("2.- CREAR Agenda VACIA.");
+        System.out.println("3.- Volviendo al menu principal.");
+    }
+
+    public void mostrarPrimerMenu() throws IOException{
+        int opcion;
+
+        do{
+            primerMenu();
+            System.out.println("Elige una opcion: ");
+            opcion = Leer.datoInt();
+
+            switch (opcion){
+                case 1:
+                llenar();
+                guardar();
+                break;
+
+                case 2:
+                vaciar();
+                guardar();
+                break;
+
+                case 3:
+                System.out.println("Volviendo al menu principal...");
+                break;
+
+                default:
+                System.out.println("Opcion erronea. Intentao de novo.");
+            }
+        } while (opcion!=3);
+    }
+
+    private void segundoMenu() {
 		System.out.println("\tA G E N D A ");
 		System.out.println("  =======================");
 		System.out.println("1.- CREAR Agenda");
@@ -221,7 +258,7 @@ public void Borrar(){
 		System.out.print("Pulsa opcion: ");
 	}
 
-    private void primerMenu() {
+    private void ultimoMenu() {
         System.out.println("\tM A S  O P C I O N E S");
         System.out.println(" ================================");
         System.out.println("1.- Mostrar informacion del archivo.");
@@ -230,13 +267,11 @@ public void Borrar(){
         System.out.println("4.- Volver al menu principal.");
     }
 
-    //Esto se usa para poder cambiar de menu cuanto pulses el boton 9 
-    //y que salga con las opciones del 9
-    public void mostrarPrimerMenu() throws IOException {
+    public void mostrarUltimoMenu() throws IOException {
     int opcion;
 
     do {
-        primerMenu();
+        ultimoMenu();
         System.out.print("Elige una opción: ");
         opcion = Leer.datoInt();
 
@@ -262,7 +297,7 @@ public void Borrar(){
     public int dameOpcion() {
 		int opcion;
 
-		menu();
+		segundoMenu();
 		opcion = Leer.datoInt();
 		System.out.println();
 		return opcion;
