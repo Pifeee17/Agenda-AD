@@ -1,8 +1,14 @@
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Scanner;
+
 
 public class Agenda {
 
@@ -221,6 +227,66 @@ public void Borrar(){
         }
     }
 
+    public static void copiaDeSeguridad(File fichero){
+        String ruta = fichero.getAbsolutePath();
+        String copia = "F:/Dam2/AD/CopiasAgenda/PruebaCopiaAgenda";
+
+        try {
+            Path origen = Paths.get(ruta);
+            Path destino = Paths.get(copia);
+
+            //El StandarCopyOption se utiliza para sobreescribir el archivo si existe
+            Files.copy(origen, destino);
+
+            System.out.println("La Copia de Seguridad fue realizada con exito.");
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    public static void restaurarCopiaDeSeguridad(File fichero) {
+    String carpetaCopias = "F:/Dam2/AD/CopiasAgenda/";
+    File carpeta = new File(carpetaCopias);
+
+    if (!carpeta.exists()) {
+        System.out.println("No existe la carpeta de copias de seguridad.");
+        return;
+    }
+
+    File[] copias = carpeta.listFiles();
+    if (copias == null || copias.length == 0) {
+        System.out.println("No hay copias de seguridad disponibles.");
+        return;
+    }
+
+    System.out.println("Copias de Seguridad disponibles:");
+    for (int i = 0; i < copias.length; i++) {
+        System.out.println((i + 1) + ". " + copias[i].getName());
+    }
+
+    Scanner sc = new Scanner(System.in);
+    System.out.print("Escriba el número de la copia que desea restaurar: ");
+    int opcion = sc.nextInt();
+
+    if (opcion < 1 || opcion > copias.length) {
+        System.out.println("Número inválido.");
+        return;
+    }
+
+    File copiaElegida = copias[opcion - 1];
+
+    try {
+        // Copiamos la copia elegida sobre el fichero original de la agenda
+        Files.copy(copiaElegida.toPath(), fichero.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+        System.out.println("Se restauró la copia: " + copiaElegida.getName());
+    } catch (IOException e) {
+        System.out.println("Error al restaurar la copia.");
+        e.printStackTrace();
+    }
+}
+
+
     private void primerMenu() {
         System.out.println("\tC R E A R  A G E N D A ");
         System.out.println(" ============================= ");
@@ -296,10 +362,10 @@ public void Borrar(){
                informacionDelArchivo(fichero);
                 break;
             case 2:
-                System.out.println("Opcion de copia de seguridad no implementada.");
+                copiaDeSeguridad(fichero);
                 break;
             case 3:
-                System.out.println("Opcion de restaurar copia de seguridad no implementada.");
+                restaurarCopiaDeSeguridad(fichero);
                 break;
             case 4:
                 System.out.println("Volviendo al menú principal...");
@@ -319,4 +385,3 @@ public void Borrar(){
 		return opcion;
 	}
 }
-
