@@ -95,58 +95,28 @@ public class Agenda {
         System.out.println("Contacto modificado correctamente.");
     }
 
-   public void restaurar() {
+    public void consultarContacto() {
+    mostrar(); 
     System.out.print("Introduce el nombre del contacto a buscar: ");
-    String buscarNombre = Leer.datoString();
+    String nombreBuscado = Leer.datoString();
 
-    boolean nombreEncontrado = false;
+    boolean encontrado = false;
 
-    if (fichero == null) {
-        System.err.println("No se ha establecido fichero para la agenda.");
-        return;
-    }
-
-    if (!fichero.exists()) {
-        System.err.println("El fichero " + fichero.getAbsolutePath() + " no existe.");
-        return;
-    }
-
-    try (DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(fichero)))) {
-        
-        while (true) {
-            String nombre = dis.readUTF();
-            String telefono = dis.readUTF();
-            String email = dis.readUTF();
-
-            if (nombre.equalsIgnoreCase(buscarNombre)) {
-                contactos.add(new Contacto(nombre, telefono, email));
-                nombreEncontrado = true;
-                break; 
+    for (Contacto c : contactos) {
+        if (c.getNombre().toLowerCase().contains(nombreBuscado.toLowerCase())) {
+            if (!encontrado) {
+                System.out.println("Contactos encontrados:");
             }
+            c.mostrarContacto();
+            encontrado = true;
         }
-    } catch (IOException e) {
-        if (!nombreEncontrado) {
-            System.out.println("No se encontró el contacto: " + buscarNombre);
-        } else {
-            System.out.println("Contacto restaurado correctamente.");
-        }
+    }
+
+    if (!encontrado) {
+        System.out.println("No se ha encontrado ningún contacto con ese nombre.");
     }
 }
 
-    public Contacto consultarContacto() {
-        System.out.print("Introduce el nombre del contacto a buscar: ");
-        String nombreBuscado = Leer.datoString();
-
-        for (Contacto c : contactos) {
-            if (c.getNombre().equalsIgnoreCase(nombreBuscado)) {
-                System.out.println("Contacto encontrado:");
-                c.mostrarContacto();
-                return c;
-            }
-        }
-        System.out.println("No se ha encontrado ningún contacto con ese nombre.");
-        return null;
-    }
 
     public void guardar() {
     if (fichero == null) {
@@ -226,6 +196,54 @@ public void Borrar(){
 
         }
     }
+
+   public void restaurar() {
+    String rutaCarpeta = "F:/Dam2/AD/Java/Repaso_DAM1/Agenda";
+    String nombreArchivo = "ContactosBorrados.dat";
+    File archivo = new File(rutaCarpeta, nombreArchivo);
+
+    if (!archivo.exists()) {
+        System.out.println("No hay contactos borrados para restaurar.");
+        return;
+    }
+
+    try (BufferedReader br = new BufferedReader(new FileReader(archivo))) {
+        ArrayList<String> lineas = new ArrayList<>();
+        String linea;
+
+        while ((linea = br.readLine()) != null) {
+            lineas.add(linea);
+        }
+
+        if (lineas.isEmpty()) {
+            System.out.println("No hay contactos borrados para restaurar.");
+            return;
+        }
+
+        System.out.println("Contactos borrados:");
+        for (int i = 0; i < lineas.size(); i++) {
+            System.out.println((i + 1) + ". " + lineas.get(i));
+        }
+
+        System.out.print("Elige el número del contacto a restaurar: ");
+        int opcion = Leer.datoInt();
+
+        if (opcion < 1 || opcion > lineas.size()) {
+            System.out.println("Opción inválida.");
+            return;
+        }
+
+        String contactoTexto = lineas.get(opcion - 1);
+       
+        System.out.println("Restaurando: " + contactoTexto);
+        guardar();
+
+    } catch (IOException e) {
+        System.out.println("Error al leer el archivo de borrados: " + e.getMessage());
+    }
+}
+
+
 
     public static void copiaDeSeguridad(File fichero){
         String ruta = fichero.getAbsolutePath();
@@ -376,11 +394,11 @@ public void Borrar(){
     } while (opcion != 4);
 }
 
-    public int dameOpcion() {
-		int opcion;
+    public String dameOpcion() {
+		String opcion;
 
 		segundoMenu();
-		opcion = Leer.datoInt();
+		opcion = Leer.datoString();
 		System.out.println();
 		return opcion;
 	}

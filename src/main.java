@@ -8,54 +8,54 @@ public class main {
         File fichero = new File("agenda.dat"); 
         Agenda agenda = new Agenda(fichero);
 
-        int opcion;
+        String opcion;
 
         do {
             opcion = agenda.dameOpcion(); 
 
             switch (opcion) {
-                case 1:
+                case "1":
                     agenda.mostrarPrimerMenu();
                     break;
 
-                case 2:
+                case "2":
                     agenda.anhadir();
                     agenda.guardar();
                     break;
 
-                case 3:
+                case "3":
                     agenda.consultarContacto();
                     break;
 
-                case 4:
+                case "4":
                     agenda.modificar();
                     agenda.guardar();
                     break;
 
-                case 5:
+                case "5":
                     agenda.Borrar();
                     agenda.guardar();
                     break;
 
-                case 6:
+                case "6":
                     agenda.restaurar();
                     agenda.guardar();
                     break;
 
-                case 7:
+                case "7":
                     agenda.mostrar();
                     break;
 
-                case 8:
+                case "8":
                     agenda.vaciar();
                     agenda.guardar();
                     break;
 
-                case 9:
+                case "9":
                    agenda.mostrarUltimoMenu();
                     break;
 
-                case 10:
+                case "10":
                     System.out.println("Saliendo del programa...");
                     break;
 
@@ -65,6 +65,6 @@ public class main {
                     break;
             }
 
-        } while (opcion != 10);
+        } while (!opcion.equals("10"));
     }
 }
