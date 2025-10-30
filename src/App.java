@@ -1,7 +1,7 @@
 import java.io.File;
 import java.io.IOException;
 
-public class main {
+public class App {
 
     public static void main(String[] args) throws IOException {
 
@@ -20,7 +20,6 @@ public class main {
 
                 case "2":
                     agenda.anhadir();
-                    agenda.guardar();
                     break;
 
                 case "3":
@@ -39,7 +38,6 @@ public class main {
 
                 case "6":
                     agenda.restaurar();
-                    agenda.guardar();
                     break;
 
                 case "7":

@@ -6,7 +6,6 @@ import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.Scanner;
 
 
@@ -60,14 +59,33 @@ public class Agenda {
         System.out.print("Introduce nombre: ");
         String nombre = Leer.datoString();
 
+        String mail;
+       while (true) {
         System.out.print("Introduce email: ");
-        String mail = Leer.datoString();
+        mail = Leer.datoString();
 
-        System.out.print("Introduce teléfono: ");
-        String telefono = Leer.datoString();
+        if (mail.contains("@") && mail.contains(".")) {
+            break; //Valida el email
+        } else {
+            System.out.println("El formato de email no es correcto. Inténtalo de nuevo.");
+        }
+    }
+
+        String telefono;
+        while (true) {
+            System.out.print("Introduce teléfono: ");
+            telefono = Leer.datoString();
+            if (telefono.contains("[0 - 9]") || telefono.length()==9) {
+                break;
+            }else{
+                System.out.println("El formato del número de telefono no es correcto.");
+            }
+        }
+        
 
         contactos.add(new Contacto(nombre, telefono, mail));
         System.out.println("Contacto añadido correctamente.");
+        guardar();
     }
 
     public void modificar() {
@@ -83,11 +101,28 @@ public class Agenda {
         System.out.print("Introduce nuevo nombre: ");
         String nuevoNombre = Leer.datoString();
 
-        System.out.print("Introduce nuevo teléfono: ");
-        String nuevoTelefono = Leer.datoString();
+         String nuevoEmail;
+       while (true) {
+        System.out.print("Introduce email: ");
+        nuevoEmail = Leer.datoString();
 
-        System.out.print("Introduce nuevo email: ");
-        String nuevoEmail = Leer.datoString();
+        if (nuevoEmail.contains("@") && nuevoEmail.contains(".")) {
+            break; //Valida el email
+        } else {
+            System.out.println("El formato de email no es correcto. Inténtalo de nuevo.");
+        }
+    }
+
+        String nuevoTelefono;
+        while (true) {
+            System.out.print("Introduce teléfono: ");
+            nuevoTelefono = Leer.datoString();
+            if (nuevoTelefono.contains("[0 - 9]") || nuevoTelefono.length()==9) {
+                break;
+            }else{
+                System.out.println("El formato del número de telefono no es correcto.");
+            }
+        }
 
         Contacto contactoNuevo = new Contacto(nuevoNombre, nuevoTelefono, nuevoEmail);
         contactos.set(i, contactoNuevo);
@@ -137,51 +172,78 @@ public class Agenda {
     }
 }
 
-public void Borrar(){
+public void Borrar() {
+    mostrar();
 
-     String rutaCarpeta = "F:/Dam2/AD/Java/Repaso_DAM1/Agenda";
-        String nombreArchivo = "ContactosBorrados.dat";
+    String rutaCarpeta = "F:/Dam2/AD/Java/Repaso_DAM1/Agenda";
+    String nombreArchivo = "ContactosBorrados.dat";
 
-        File carpeta = new File(rutaCarpeta);
-        File archivo = new File(carpeta, nombreArchivo);
+    File carpeta = new File(rutaCarpeta);
+    File archivo = new File(carpeta, nombreArchivo);
 
-        if (!carpeta.exists()) {
+    if (!carpeta.exists()) {
         carpeta.mkdirs();
     }
 
-    boolean encontrado = false;
-
-    try (BufferedWriter bw = new BufferedWriter(new FileWriter(archivo, true))) { 
+    try (BufferedWriter bw = new BufferedWriter(new FileWriter(archivo, true))) {
 
         System.out.println("Introduce el nombre del contacto a borrar: ");
         String nombreBorrar = Leer.datoString();
 
-        Iterator<Contacto> it = contactos.iterator();
-        while (it.hasNext()) {
-            Contacto c = it.next();
+        //Buscar todos los contactos que coincidan
+        ArrayList<Contacto> coincidencias = new ArrayList<>();
+        for (Contacto c : contactos) {
             if (c.getNombre().equalsIgnoreCase(nombreBorrar)) {
-                System.out.println("Contacto encontrado:");
-                c.mostrarContacto();
-                it.remove();
-                encontrado = true;
-
-                bw.write("Nombre: "+c.getNombre() + "  Telefono: " + c.getTelefono() + "  Email: " + c.getEmail());
-                bw.newLine();
-
-                System.out.println("Contacto borrado correctamente.");
-                break;
+                coincidencias.add(c);
             }
         }
 
-        if (!encontrado) {
+        if (coincidencias.isEmpty()) {
             System.out.println("No se encontró ningún contacto con ese nombre.");
+            return;
+        }
+
+        //Si hay más de uno, preguntar cuál borrar
+        if (coincidencias.size() > 1) {
+            System.out.println("Se encontraron varios contactos con ese nombre:");
+            for (int i = 0; i < coincidencias.size(); i++) {
+                System.out.print((i + 1) + ". ");
+                coincidencias.get(i).mostrarContacto();
+            }
+
+            System.out.print("Elige el índice del contacto a borrar: ");
+            int opcion = Leer.datoInt();
+
+            if (opcion < 1 || opcion > coincidencias.size()) {
+                System.out.println("Opción inválida. No se borró ningún contacto.");
+                return;
+            }
+
+            Contacto elegido = coincidencias.get(opcion - 1);
+
+            //Borrar el elegido de la lista principal
+            contactos.remove(elegido);
+
+            //Guardar el borrado en ContactosBorrados.dat
+            bw.write(elegido.getNombre() + "," + elegido.getTelefono() + "," + elegido.getEmail());
+            bw.newLine();
+
+            System.out.println("Contacto borrado correctamente.");
+
+        } else {
+            // Solo hay un contacto con ese nombre
+            Contacto c = coincidencias.get(0);
+            contactos.remove(c);
+            bw.write(c.getNombre() + "," + c.getTelefono() + "," + c.getEmail());
+            bw.newLine();
+            System.out.println("Contacto borrado correctamente.");
         }
 
     } catch (IOException e) {
         System.out.println("Error al escribir el archivo: " + e.getMessage());
     }
-    
 }
+
     public static void informacionDelArchivo(File fichero){
         System.out.println("\tI N F O  F I C H E R O ");
         System.out.println(" ================================");
@@ -225,7 +287,7 @@ public void Borrar(){
             System.out.println((i + 1) + ". " + lineas.get(i));
         }
 
-        System.out.print("Elige el número del contacto a restaurar: ");
+        System.out.print("Elige el índice del contacto a restaurar: ");
         int opcion = Leer.datoInt();
 
         if (opcion < 1 || opcion > lineas.size()) {
@@ -234,16 +296,39 @@ public void Borrar(){
         }
 
         String contactoTexto = lineas.get(opcion - 1);
-       
         System.out.println("Restaurando: " + contactoTexto);
-        guardar();
+
+        //Parseo simple por comas 
+        String[] partes = contactoTexto.split(",");
+        if (partes.length == 3) {
+            String nombre = partes[0].trim();
+            String telefono = partes[1].trim();
+            String email = partes[2].trim();
+
+            Contacto c = new Contacto(nombre, telefono, email);
+            contactos.add(c);
+            guardar();
+            System.out.println("Contacto restaurado correctamente.");
+
+            //Eliminar el contacto restaurado del archivo de borrados
+            lineas.remove(opcion - 1);
+
+            try (BufferedWriter bw = new BufferedWriter(new FileWriter(archivo))) {
+                for (String l : lineas) {
+                    bw.write(l);
+                    bw.newLine();
+                }
+            }
+
+            System.out.println("Contacto eliminado de ContactosBorrados.dat.");
+        } else {
+            System.out.println("Formato de contacto incorrecto: " + contactoTexto);
+        }
 
     } catch (IOException e) {
         System.out.println("Error al leer el archivo de borrados: " + e.getMessage());
     }
 }
-
-
 
     public static void copiaDeSeguridad(File fichero){
         String ruta = fichero.getAbsolutePath();
@@ -253,7 +338,7 @@ public void Borrar(){
             Path origen = Paths.get(ruta);
             Path destino = Paths.get(copia);
 
-            //El StandarCopyOption se utiliza para sobreescribir el archivo si existe
+            
             Files.copy(origen, destino);
 
             System.out.println("La Copia de Seguridad fue realizada con exito.");
@@ -283,20 +368,29 @@ public void Borrar(){
     }
 
     Scanner sc = new Scanner(System.in);
-    System.out.print("Escriba el número de la copia que desea restaurar: ");
-    int opcion = sc.nextInt();
+    int opcion = -1;
 
-    if (opcion < 1 || opcion > copias.length) {
-        System.out.println("Número inválido.");
-        return;
+    while (true) {
+        System.out.print("Escriba el número de la copia que desea restaurar: ");
+        String entrada = sc.nextLine();
+
+        try {
+            opcion = Integer.parseInt(entrada);
+
+            if (opcion < 1 || opcion > copias.length) {
+                System.out.println("Número inválido. Intente de nuevo.");
+            } else {
+                break; //salimos del bucle
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Entrada no válida. Debe introducir un número.");
+        }
     }
 
     File copiaElegida = copias[opcion - 1];
 
     try {
-        // Copiamos la copia elegida sobre el fichero original de la agenda
         Files.copy(copiaElegida.toPath(), fichero.toPath(), StandardCopyOption.REPLACE_EXISTING);
-
         System.out.println("Se restauró la copia: " + copiaElegida.getName());
     } catch (IOException e) {
         System.out.println("Error al restaurar la copia.");
@@ -314,32 +408,32 @@ public void Borrar(){
     }
 
     public void mostrarPrimerMenu() throws IOException{
-        int opcion;
+        String opcion;
 
         do{
             primerMenu();
             System.out.println("Elige una opcion: ");
-            opcion = Leer.datoInt();
+            opcion = Leer.datoString();
 
             switch (opcion){
-                case 1:
+                case "1":
                 llenar();
                 guardar();
                 break;
 
-                case 2:
+                case "2":
                 vaciar();
                 guardar();
                 break;
 
-                case 3:
+                case "3":
                 System.out.println("Volviendo al menu principal...");
                 break;
 
                 default:
                 System.out.println("Opcion erronea. Intentao de novo.");
             }
-        } while (opcion!=3);
+        } while (!opcion.equals("3"));
     }
 
     private void segundoMenu() {
@@ -368,31 +462,31 @@ public void Borrar(){
     }
 
     public void mostrarUltimoMenu() throws IOException {
-    int opcion;
+    String opcion;
 
     do {
         ultimoMenu();
         System.out.print("Elige una opción: ");
-        opcion = Leer.datoInt();
+        opcion = Leer.datoString();
 
         switch (opcion) {
-            case 1:
+            case "1":
                informacionDelArchivo(fichero);
                 break;
-            case 2:
+            case "2":
                 copiaDeSeguridad(fichero);
                 break;
-            case 3:
+            case "3":
                 restaurarCopiaDeSeguridad(fichero);
                 break;
-            case 4:
+            case "4":
                 System.out.println("Volviendo al menú principal...");
                 break;
             default:
                 System.out.println("Opción no válida. Intenta de nuevo.");
-        }
-    } while (opcion != 4);
-}
+             }
+        } while (!opcion.equals("4"));
+    }
 
     public String dameOpcion() {
 		String opcion;
