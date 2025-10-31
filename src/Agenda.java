@@ -22,8 +22,8 @@ public class Agenda {
     }
 
     public void cabecera() {
-        System.out.println("\tNombre\t\tTelefono\t\tEmail");
-        System.out.println("\t=============================");
+        System.out.println("Nombre\t\tTelefono\t\tEmail");
+        System.out.println("=============================================");
     }
 
     public void llenar() {
@@ -56,15 +56,25 @@ public class Agenda {
     }
 
     public void anhadir() {
-        System.out.print("Introduce nombre: ");
-        String nombre = Leer.datoString();
-
-        String mail;
+        String nombre;
+        
        while (true) {
+        System.out.print("Introduce nombre: ");
+       nombre = Leer.datoString();
+        if (nombre.matches("[A-Z].*[a-z]")){
+        break;
+        }else {
+            System.out.println("El formato del nombre no es correcto. Inténtalo de nuevo.");
+        }
+       }  
+        
+        String mail;
+        //Creamos bucle infinito hasta que el email sea correcto
+       while (true) { 
         System.out.print("Introduce email: ");
         mail = Leer.datoString();
 
-        if (mail.contains("@") && mail.contains(".")) {
+        if (mail.contains("@") && mail.contains(".") && mail.length()>7) {
             break; //Valida el email
         } else {
             System.out.println("El formato de email no es correcto. Inténtalo de nuevo.");
@@ -75,7 +85,7 @@ public class Agenda {
         while (true) {
             System.out.print("Introduce teléfono: ");
             telefono = Leer.datoString();
-            if (telefono.contains("[0 - 9]") || telefono.length()==9) {
+            if (telefono.matches("[0-9]{9}")) {  //Valida que tenga 9 dígitos
                 break;
             }else{
                 System.out.println("El formato del número de telefono no es correcto.");
@@ -97,9 +107,18 @@ public class Agenda {
             System.err.println("Índice no válido.");
             return;
         }
-
+        String nuevoNombre;
+        while (true) {
+        System.out.print("Introduce nombre: ");
+       nuevoNombre = Leer.datoString();
+        if (nuevoNombre.matches("[A-Z].*[a-z]")){
+        break;
+        }else {
+            System.out.println("El formato del nombre no es correcto. Inténtalo de nuevo.");
+        }
+       }  
         System.out.print("Introduce nuevo nombre: ");
-        String nuevoNombre = Leer.datoString();
+        nuevoNombre = Leer.datoString();
 
          String nuevoEmail;
        while (true) {
@@ -117,7 +136,7 @@ public class Agenda {
         while (true) {
             System.out.print("Introduce teléfono: ");
             nuevoTelefono = Leer.datoString();
-            if (nuevoTelefono.contains("[0 - 9]") || nuevoTelefono.length()==9) {
+            if (nuevoTelefono.matches("[0 - 9]") || nuevoTelefono.length()==9) {
                 break;
             }else{
                 System.out.println("El formato del número de telefono no es correcto.");
@@ -193,6 +212,7 @@ public void Borrar() {
         //Buscar todos los contactos que coincidan
         ArrayList<Contacto> coincidencias = new ArrayList<>();
         for (Contacto c : contactos) {
+            //El método equalsIgnoreCase se utiliza para comparar dos cadenas de texto ignorando si están en mayúsculas o minúsculas. Devuelve un boolean.
             if (c.getNombre().equalsIgnoreCase(nombreBorrar)) {
                 coincidencias.add(c);
             }
@@ -331,21 +351,39 @@ public void Borrar() {
 }
 
     public static void copiaDeSeguridad(File fichero){
-        String ruta = fichero.getAbsolutePath();
-        String copia = "F:/Dam2/AD/CopiasAgenda/PruebaCopiaAgenda";
-
-        try {
-            Path origen = Paths.get(ruta);
-            Path destino = Paths.get(copia);
-
-            
-            Files.copy(origen, destino);
-
-            System.out.println("La Copia de Seguridad fue realizada con exito.");
-        }catch (IOException e){
-            e.printStackTrace();
-        }
+    if (fichero == null || !fichero.exists()) {
+        System.out.println("No se ha encontrado el archivo de la agenda.");
+        return;
     }
+
+    // Carpeta donde se guardarán las copias
+    String carpetaCopias = "F:/Dam2/AD/CopiasAgenda/";
+    File carpeta = new File(carpetaCopias);
+    if (!carpeta.exists()) {
+        carpeta.mkdirs();
+    }
+
+    // Nombre base del archivo
+    String nombreBase = "PruebaCopiaAgenda";
+
+    // Obtener fecha y hora actuales
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmm");
+    String fechaHora = sdf.format(new Date());
+
+    // Crear ruta final de la copia
+    String rutaCopia = carpetaCopias + nombreBase + "_" + fechaHora;
+
+    try {
+        Path origen = Paths.get(fichero.getAbsolutePath());
+        Path destino = Paths.get(rutaCopia);
+
+        Files.copy(origen, destino, StandardCopyOption.REPLACE_EXISTING);
+        System.out.println("La copia de seguridad fue realizada con éxito: " + rutaCopia);
+    } catch (IOException e) {
+        System.out.println("Error al crear la copia de seguridad.");
+        e.printStackTrace();
+    }
+}
 
     public static void restaurarCopiaDeSeguridad(File fichero) {
     String carpetaCopias = "F:/Dam2/AD/CopiasAgenda/";
@@ -380,7 +418,7 @@ public void Borrar() {
             if (opcion < 1 || opcion > copias.length) {
                 System.out.println("Número inválido. Intente de nuevo.");
             } else {
-                break; //salimos del bucle
+                break; 
             }
         } catch (NumberFormatException e) {
             System.out.println("Entrada no válida. Debe introducir un número.");
