@@ -385,7 +385,29 @@ public void Borrar() {
     }
 }
 
-    public static void restaurarCopiaDeSeguridad(File fichero) {
+    public void cargar() {
+    contactos.clear(); //vaciamos la lista actual
+
+    if (fichero == null || !fichero.exists()) {
+        System.out.println("No existe el archivo de agenda.");
+        return;
+    }
+
+    try (DataInputStream dataInputStream = new DataInputStream(new FileInputStream(fichero))) {
+        while (dataInputStream.available() > 0) { //es para mirar si hay datos disponibles en el flujo
+            String nombre = dataInputStream.readUTF();
+            String telefono = dataInputStream.readUTF();
+            String email = dataInputStream.readUTF();
+            contactos.add(new Contacto(nombre, telefono, email));
+        }
+        System.out.println("Agenda cargada correctamente desde el archivo.");
+    } catch (IOException e) {
+        System.out.println("Error al leer el archivo: " + e.getMessage());
+    }
+}
+
+
+    public void restaurarCopiaDeSeguridad() {
     String carpetaCopias = "F:/Dam2/AD/CopiasAgenda/";
     File carpeta = new File(carpetaCopias);
 
@@ -414,11 +436,10 @@ public void Borrar() {
 
         try {
             opcion = Integer.parseInt(entrada);
-
             if (opcion < 1 || opcion > copias.length) {
                 System.out.println("Número inválido. Intente de nuevo.");
             } else {
-                break; 
+                break;
             }
         } catch (NumberFormatException e) {
             System.out.println("Entrada no válida. Debe introducir un número.");
@@ -430,11 +451,15 @@ public void Borrar() {
     try {
         Files.copy(copiaElegida.toPath(), fichero.toPath(), StandardCopyOption.REPLACE_EXISTING);
         System.out.println("Se restauró la copia: " + copiaElegida.getName());
+
+        cargar();
+
     } catch (IOException e) {
         System.out.println("Error al restaurar la copia.");
         e.printStackTrace();
     }
 }
+
 
 
     private void primerMenu() {
@@ -515,7 +540,7 @@ public void Borrar() {
                 copiaDeSeguridad(fichero);
                 break;
             case "3":
-                restaurarCopiaDeSeguridad(fichero);
+                restaurarCopiaDeSeguridad();
                 break;
             case "4":
                 System.out.println("Volviendo al menú principal...");
